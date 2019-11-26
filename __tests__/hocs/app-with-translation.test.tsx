@@ -17,6 +17,7 @@ const defaultConfig = {
   localeSubpaths: localeSubpathVariations.NONE,
   allLanguages: ['en', 'de'],
   lng: 'en',
+  shallowRouteChange: false,
   react: {
     wait: true,
     useSuspense: false,
@@ -87,4 +88,31 @@ describe('appWithTranslation', () => {
     await i18n.changeLanguage('de')
     expect(mockRouterFn).toHaveBeenCalledTimes(0)
   })
+
+  it('will call change language with shallow routing if shallowRouteChange is true', async () => {
+    isServer.mockReturnValue(false)
+    const { i18n } = await createApp({...defaultConfig, shallowRouteChange: true});
+    (i18n as any).initializedLanguageOnce = true
+    await i18n.changeLanguage('de')
+    expect(mockRouterFn).toHaveBeenCalledTimes(1)
+    expect(mockRouterFn).toHaveBeenCalledWith(
+      {"pathname": defaultProps.router.pathname, "query": {}}, 
+      defaultProps.router.pathname, 
+      { shallow: true}
+    )
+  })
+
+  it('will not call change language with shallow routing if shallowRouteChange is false', async () => {
+    isServer.mockReturnValue(false)
+    const { i18n } = await createApp();
+    (i18n as any).initializedLanguageOnce = true
+    await i18n.changeLanguage('de')
+    expect(mockRouterFn).toHaveBeenCalledTimes(1)
+    expect(mockRouterFn).toHaveBeenCalledWith(
+      {"pathname": defaultProps.router.pathname, "query": {}}, 
+      defaultProps.router.pathname, 
+      { shallow: false}
+    )
+  })
+
 })

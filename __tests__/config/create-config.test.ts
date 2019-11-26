@@ -113,6 +113,7 @@ describe('create configuration in non-production environment', () => {
 
       expect(config.backend.loadPath).toEqual('/home/user/static/translations/{{ns}}/{{lng}}.json')
       expect(config.backend.addPath).toEqual('/home/user/static/translations/{{ns}}/{{lng}}.missing.json')
+      expect(config.shallowRouteChange).toBeFalsy();
     })
 
     it('preserves config.ns, if provided in user configuration', () => {
